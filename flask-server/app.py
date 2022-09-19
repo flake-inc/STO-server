@@ -10,7 +10,7 @@ def home():
 
 @app.route('/about')
 def about():
-    return 'You are directed to the about page!'
+    return 'You are directed to the about  info page!'
 
 if __name__ == '__main__':
     app.run()
