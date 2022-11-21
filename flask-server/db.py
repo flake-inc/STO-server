@@ -24,5 +24,11 @@ CONNECTION_STRING = "mongodb+srv://safetakeoff:safetakeoff@sto.8o3avqd.mongodb.n
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('safetakeoff')
 user_collection = pymongo.collection.Collection(db, 'weatherdatanew')
+minmaxdata = pymongo.collection.Collection(db, 'minmaxmeandata')
+yearlyavg = pymongo.collection.Collection(db, 'yearlyavg')
+monthlyavg = pymongo.collection.Collection(db, 'monthlyavg')
+
+
+
 
 

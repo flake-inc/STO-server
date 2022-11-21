@@ -41,6 +41,62 @@ app.json_encoder = MongoJsonEncoder
 def flask_mongodb_atlas():
     return redirect('http://127.0.0.1:5173/')
 
+# @app.route("/test",methods=['GET'])
+# # @cross_origin(origin='*',headers=['Content- Type','Authorization'])
+
+# def test():
+
+    # d = db.user_collection.find({})
+    # # dict.pop('_id')
+    # df = pd.json_normalize(d)
+    # dftempyear = pd.DataFrame(df.groupby(['year'])['temperature'].mean())
+    
+    # dftempyear['year'] = dftempyear.index
+
+    
+    # x= dftempyear['year'].to_list()
+    # y=dftempyear['temperature'].to_list()
+    # result={}
+    # result['year']=x
+    # result['temp']=y
+
+    # # tempyear= dftempyear.to_json(orient='records')[1:-1].replace('},{', '} {')
+    # # json_list = json.loads(json.dumps(list(dftempyear.T.to_dict().values())))
+    
+    # # return jsonify(list(d)[0])
+    # return jsonify(result)
+
+@app.route("/barchart",methods=['GET'])
+# @cross_origin(origin='*',headers=['Content- Type','Authorization'])
+
+def barchart():
+
+    d = db.minmaxdata.find({})
+    df = pd.json_normalize(d)
+    df = df.sort_values('monthdate')
+
+    result={}
+
+    result['date']= df['monthdate'].to_list()
+    result['temp']= df['temperature'].to_list()  
+    result['wind']= df['wind_speed'].to_list()   
+    result['press']= df['mean_sea_level_pressure'].to_list()   
+    result['cloud']= df['total_cloud_cover'].to_list()   
+    result['mintemp']= df['mintemp'].to_list()   
+    result['minwind']= df['minwind'].to_list()   
+    result['minpress']= df['minpress'].to_list()   
+    result['mincloud']= df['mincloud'].to_list()   
+    result['maxtemp']= df['maxtemp'].to_list()   
+    result['maxwind']= df['maxwind'].to_list()   
+    result['maxpress']= df['maxpress'].to_list()   
+    result['maxcloud']= df['maxcloud'].to_list()  
+
+    return jsonify(result) 
+   
+   
+
+
+
 @app.route("/test",methods=['GET'])
 # @cross_origin(origin='*',headers=['Content- Type','Authorization'])
 
@@ -50,13 +106,66 @@ def test():
     # dict.pop('_id')
     df = pd.json_normalize(d)
     dftempyear = pd.DataFrame(df.groupby(['year'])['temperature'].mean())
+    
     dftempyear['year'] = dftempyear.index
 
+    
+    x= dftempyear['year'].to_list()
+    y=dftempyear['temperature'].to_list()
+    result={}
+    result['year']=x
+    result['temp']=y
+
     # tempyear= dftempyear.to_json(orient='records')[1:-1].replace('},{', '} {')
-    json_list = json.loads(json.dumps(list(dftempyear.T.to_dict().values())))
+    # json_list = json.loads(json.dumps(list(dftempyear.T.to_dict().values())))
     
     # return jsonify(list(d)[0])
-    return json_list
+    return jsonify(result)
+
+@app.route("/yearlyavg",methods=['GET'])
+# @cross_origin(origin='*',headers=['Content- Type','Authorization'])
+
+def yearlyavg():
+
+    d = db.yearlyavg.find({})
+    df = pd.json_normalize(d)
+    df = df.sort_values('year')
+
+    result={}
+
+    result['year']= df['year'].to_list()
+    result['temp']= df['temperature'].to_list()  
+    result['wind']= df['wind_speed'].to_list()   
+    result['press']= df['mean_sea_level_pressure'].to_list()   
+    result['cloud']= df['total_cloud_cover'].to_list()   
+   
+    return jsonify(result)  
+
+
+
+    
+@app.route("/monthlyavg",methods=['GET'])
+# @cross_origin(origin='*',headers=['Content- Type','Authorization'])
+
+def monthlyavg():
+
+    d = db.monthlyavg.find({})
+    df = pd.json_normalize(d)
+    df = df.sort_values('month')
+
+    result={}
+
+    result['month']= df['month'].to_list()
+    result['temp']= df['temperature'].to_list()  
+    result['wind']= df['wind_speed'].to_list()   
+    result['press']= df['mean_sea_level_pressure'].to_list()   
+    result['cloud']= df['total_cloud_cover'].to_list()   
+   
+    return jsonify(result)  
+
+
+    
+    
 
 if __name__ == '__main__':
     app.run(port=5000,debug=True)
