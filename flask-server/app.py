@@ -92,9 +92,6 @@ def barchart():
     result['maxcloud']= df['maxcloud'].to_list()  
 
     return jsonify(result) 
-   
-   
-
 
 
 @app.route("/test",methods=['GET'])
@@ -163,9 +160,49 @@ def monthlyavg():
    
     return jsonify(result)  
 
+@app.route("/aircraftsdata",methods=['GET'])
+def aircraftsdata():
 
-    
-    
+    d = db.AirCrafts.find({})
+    df = pd.json_normalize(d)
+    # df = df.sort_values('Model')
+
+    result={}
+
+    result['Model']= df['Model'].to_list()
+    # result['Make']= df['Make'].to_list()  
+    result['Year']= df['Year'].to_list()   
+    # result['Category']= df['Category'].to_list()   
+    result['Temperature_t']= df['Temperature Threshold'].to_list()   
+    result['Wind_t']= df['Wind Speed Threshold'].to_list()   
+    # result['Solar_t']= df['Solar Radiation Threshold'].to_list()   
+    result['Cloud_t']= df['Total Cloud Cover Threshold'].to_list()  
+    result['humidity_t']= df['Relative Humidity Threshold'].to_list()   
+    # result['thermal_t']= df['Thermal Radiation Threshold'].to_list()    
+
+    return jsonify(result)  
+
+
+@app.route("/aircraftspie",methods=['GET'])
+def aircraftspie():
+
+    d = db.AirCrafts.find({})
+    df = pd.json_normalize(d)
+    result={}
+
+   
+    Categories = df.groupby("Category")
+    CategoryCount = df.groupby("Category")["Model"].count()
+    Make = df.groupby("Make")
+    MakeCount = df.groupby("Make")["Model"].count()
+
+    result['Model']= df['Model'].to_list()
+    result['Make']= list(Make.groups.keys())
+    result['MakeCount']= MakeCount.to_list()  
+    result['Categories'] = list(Categories.groups.keys())
+    result['CategoryCount']= CategoryCount.to_list()   
+
+    return jsonify(result)  
 
 if __name__ == '__main__':
     app.run(port=5000,debug=True)
