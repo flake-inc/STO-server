@@ -204,6 +204,18 @@ def aircraftspie():
 
     return jsonify(result)  
 
+@app.route("/aircraftscategories",methods=['GET'])
+def aircraftscategories():
+
+    d = db.AirCrafts.find({})
+    df = pd.json_normalize(d)
+    result={}
+
+    Categories = df.groupby("Category")
+    result['Categories'] = list(Categories.groups.keys())
+
+    return jsonify(result)  
+
 if __name__ == '__main__':
     app.run(port=5000,debug=True)
 
