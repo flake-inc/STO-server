@@ -28,6 +28,9 @@ minmaxdata = pymongo.collection.Collection(db, 'minmaxmeandata')
 yearlyavg = pymongo.collection.Collection(db, 'yearlyavg')
 monthlyavg = pymongo.collection.Collection(db, 'monthlyavg')
 AirCrafts = pymongo.collection.Collection(db, 'AirCrafts')
+test = pymongo.collection.Collection(db, 'test')
+
+
 
 
 
