@@ -32,6 +32,17 @@ TempPred = pymongo.collection.Collection(db, 'TempPred')
 CloudCoverPred = pymongo.collection.Collection(db, 'CloudCoverPred')
 PressurePred = pymongo.collection.Collection(db, 'PressurePred')
 WindSpeedPred = pymongo.collection.Collection(db, 'WindSpeedPred')
+test = pymongo.collection.Collection(db, 'test')
+user = pymongo.collection.Collection(db, 'user')
+# temppred = pymongo.collection.Collection(db, 'TempPred')
+# windpred = pymongo.collection.Collection(db, 'WindSpeedPred')
+# cloudpred = pymongo.collection.Collection(db, 'CloudCoverPred')
+# presspred = pymongo.collection.Collection(db, 'PressurePred')
+allpred = pymongo.collection.Collection(db, 'AllPred')
+
+
+
+
 
 
 
