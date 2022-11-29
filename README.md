@@ -9,7 +9,6 @@ Needful Terminal Commands:
 Set-ExecutionPolicy Unrestricted -Force  
 
 //Terminal Windows
-cd flask-server
 env\Scripts\activate
 pip install -r requirements.txt
 python app.py

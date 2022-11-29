@@ -1,4 +1,2 @@
-flask-server/Include
-flask-server/Lib
-flask-server/Model
-flask-server/Scripts
+env
+__pycache__

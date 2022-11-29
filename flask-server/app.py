@@ -95,32 +95,17 @@ def barchart():
 
 
 @app.route("/test",methods=['GET'])
-# @cross_origin(origin='*',headers=['Content- Type','Authorization'])
 
 def test():
 
-    d = db.user_collection.find({})
-    # dict.pop('_id')
-    df = pd.json_normalize(d)
-    dftempyear = pd.DataFrame(df.groupby(['year'])['temperature'].mean())
-    
-    dftempyear['year'] = dftempyear.index
+    df = pd.read_csv('submission8.csv')
+    x = json.loads(json.dumps(list(df.T.to_dict().values())))
 
+    db.test.insert_many(x)
     
-    x= dftempyear['year'].to_list()
-    y=dftempyear['temperature'].to_list()
-    result={}
-    result['year']=x
-    result['temp']=y
-
-    # tempyear= dftempyear.to_json(orient='records')[1:-1].replace('},{', '} {')
-    # json_list = json.loads(json.dumps(list(dftempyear.T.to_dict().values())))
-    
-    # return jsonify(list(d)[0])
-    return jsonify(result)
+    return x
 
 @app.route("/yearlyavg",methods=['GET'])
-# @cross_origin(origin='*',headers=['Content- Type','Authorization'])
 
 def yearlyavg():
 
