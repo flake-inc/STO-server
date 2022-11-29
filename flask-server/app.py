@@ -216,6 +216,55 @@ def aircraftscategories():
 
     return jsonify(result)  
 
+@app.route("/temppred",methods=['GET'])
+
+def temppred():
+    d = db.TempPred.find({})
+    df = pd.json_normalize(d)
+    df = df.sort_values('ds')
+    result={}
+    result['ds']= df['ds'].to_list()
+    result['yhat1']= df['yhat1'].to_list()  
+   
+    return jsonify(result)  
+
+
+@app.route("/pressurepred",methods=['GET'])
+def pressurepred():
+    d = db.PressurePred.find({})
+    df = pd.json_normalize(d)
+    df = df.sort_values('ds')
+
+    result={}
+    result['ds']= df['ds'].to_list()
+    result['yhat1']= df['yhat1'].to_list()  
+   
+    return jsonify(result) 
+
+@app.route("/cloudpred",methods=['GET'])
+def cloudpred():
+    d = db.CloudCoverPred.find({})
+    df = pd.json_normalize(d)
+    df = df.sort_values('ds')
+
+    result={}
+    result['ds']= df['ds'].to_list()
+    result['yhat1']= df['yhat1'].to_list()  
+   
+    return jsonify(result) 
+
+@app.route("/windpred",methods=['GET'])
+def windpred():
+    d = db.WindspeedPred.find({})
+    df = pd.json_normalize(d)
+    df = df.sort_values('ds')
+
+    result={}
+    result['ds']= df['ds'].to_list()
+    result['yhat1']= df['yhat1'].to_list()  
+   
+    return jsonify(result) 
+
 if __name__ == '__main__':
     app.run(port=5000,debug=True)
 

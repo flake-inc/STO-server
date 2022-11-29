@@ -28,7 +28,10 @@ minmaxdata = pymongo.collection.Collection(db, 'minmaxmeandata')
 yearlyavg = pymongo.collection.Collection(db, 'yearlyavg')
 monthlyavg = pymongo.collection.Collection(db, 'monthlyavg')
 AirCrafts = pymongo.collection.Collection(db, 'AirCrafts')
-
+TempPred = pymongo.collection.Collection(db, 'TempPred')
+CloudCoverPred = pymongo.collection.Collection(db, 'CloudCoverPred')
+PressurePred = pymongo.collection.Collection(db, 'PressurePred')
+WindspeedPred = pymongo.collection.Collection(db, 'WindspeedPred')
 
 
 
