@@ -327,7 +327,7 @@ def aircraftscategories():
 
 @app.route("/temppred", methods=['GET'])
 def temppred():
-    d = db.TempPred.find().limit(1000)
+    d = db.TempPred.find().limit(6000)
     df = pd.json_normalize(d)
     df = df.sort_values('ds')
     result = {}
@@ -340,7 +340,7 @@ def temppred():
 
 @app.route("/pressurepred", methods=['GET'])
 def pressurepred():
-    d = db.PressurePred.find().limit(1000)
+    d = db.PressurePred.find().limit(6000)
     df = pd.json_normalize(d)
     df = df.sort_values('ds')
 
@@ -353,7 +353,7 @@ def pressurepred():
 
 @app.route("/cloudpred", methods=['GET'])
 def cloudpred():
-    d = db.CloudCoverPred.find().limit(1000)
+    d = db.CloudCoverPred.find().limit(6000)
     df = pd.json_normalize(d)
     df = df.sort_values('ds')
 
@@ -366,7 +366,7 @@ def cloudpred():
 
 @app.route("/windpred", methods=['GET'])
 def windpred():
-    d = db.WindSpeedPred.find().limit(1000)
+    d = db.WindSpeedPred.find().limit(6000)
     df = pd.json_normalize(d)
     df = df.sort_values('ds')
 
