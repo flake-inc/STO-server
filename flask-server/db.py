@@ -31,7 +31,7 @@ AirCrafts = pymongo.collection.Collection(db, 'AirCrafts')
 TempPred = pymongo.collection.Collection(db, 'TempPred')
 CloudCoverPred = pymongo.collection.Collection(db, 'CloudCoverPred')
 PressurePred = pymongo.collection.Collection(db, 'PressurePred')
-WindspeedPred = pymongo.collection.Collection(db, 'WindspeedPred')
+WindSpeedPred = pymongo.collection.Collection(db, 'WindSpeedPred')
 
 
 

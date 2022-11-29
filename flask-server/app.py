@@ -208,8 +208,9 @@ def temppred():
     df = pd.json_normalize(d)
     df = df.sort_values('ds')
     result={}
-    result['ds']= df['ds'].to_list()
-    result['yhat1']= df['yhat1'].to_list()  
+
+    result['ds'] = df['ds'].to_list()[-100:]
+    result['yhat1']= df['yhat1'].to_list()[-100:]
    
     return jsonify(result)  
 
@@ -221,8 +222,8 @@ def pressurepred():
     df = df.sort_values('ds')
 
     result={}
-    result['ds']= df['ds'].to_list()
-    result['yhat1']= df['yhat1'].to_list()  
+    result['ds']= df['ds'].to_list()[-100:]
+    result['yhat1']= df['yhat1'].to_list()[-100:]  
    
     return jsonify(result) 
 
@@ -233,22 +234,88 @@ def cloudpred():
     df = df.sort_values('ds')
 
     result={}
-    result['ds']= df['ds'].to_list()
-    result['yhat1']= df['yhat1'].to_list()  
+    result['ds']= df['ds'].to_list()[-100:]
+    result['yhat1']= df['yhat1'].to_list()[-100:]  
    
     return jsonify(result) 
 
 @app.route("/windpred",methods=['GET'])
 def windpred():
-    d = db.WindspeedPred.find({})
+    d = db.WindSpeedPred.find({})
     df = pd.json_normalize(d)
     df = df.sort_values('ds')
 
     result={}
-    result['ds']= df['ds'].to_list()
-    result['yhat1']= df['yhat1'].to_list()  
+    result['ds']= df['ds'].to_list()[-100:]
+    result['yhat1']= df['yhat1'].to_list()[-100:]  
    
     return jsonify(result) 
+
+@app.route("/check_today_danger",methods=['GET'])
+def check_today_danger():
+    dangered_aircrafts = []
+    model_list = []  
+    make_list = []
+    cat_list = []
+    year_list = []
+    REG_list = []
+
+    now = datetime.now()
+    dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
+    new_dt = dt_string[:13] + ":00:00"
+    print("\n====================================")
+    print("local time:", new_dt)
+
+    wind = db.WindSpeedPred.find_one({ "ds": new_dt })
+    print("wind predict", wind['yhat1'])
+
+    temp = db.TempPred.find_one({ "ds": new_dt })
+    print("temp predict", temp['yhat1'])
+
+    cloud = db.CloudCoverPred.find_one({ "ds": new_dt })
+    print("cloud cover predict", cloud['yhat1'])
+
+    aircrafts = db.AirCrafts.find({})
+    df_air = pd.json_normalize(aircrafts)
+
+    for i in df_air.index:
+        if float(df_air['Wind Speed Threshold'][i]) <= float(wind['yhat1']):
+            dangered_aircrafts.append(df_air['_id'][i])
+            model_list.append(df_air['Model'][i])
+            make_list.append(df_air['Make'][i])
+            cat_list.append(df_air['Category'][i])
+            year_list.append(df_air['Year'][i])
+            REG_list.append(df_air['REG'][i])
+            continue
+
+        if float(df_air['Temperature Threshold'][i]) <= float(temp['yhat1']):
+            dangered_aircrafts.append(df_air['_id'][i])
+            model_list.append(df_air['Model'][i])
+            make_list.append(df_air['Make'][i])
+            cat_list.append(df_air['Category'][i])
+            year_list.append(df_air['Year'][i])
+            REG_list.append(df_air['REG'][i])
+            continue
+
+        if float(df_air['Total Cloud Cover Threshold'][i]) <= float(cloud['yhat1']):
+            dangered_aircrafts.append(df_air['_id'][i])
+            model_list.append(df_air['Model'][i])
+            make_list.append(df_air['Make'][i])
+            cat_list.append(df_air['Category'][i])
+            year_list.append(df_air['Year'][i])
+            REG_list.append(df_air['REG'][i])
+            continue
+
+
+    
+    result={}
+
+    result['Model']= model_list
+    result['Make']= make_list
+    result['Category']= cat_list    
+    result['Year']= make_list
+    result['REG']= cat_list
+    return jsonify(result)  
 
 if __name__ == '__main__':
     app.run(port=5000,debug=True)
