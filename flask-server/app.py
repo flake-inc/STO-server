@@ -60,23 +60,24 @@ server_session.init_app(app)
 app.json_encoder = MongoJsonEncoder
 
 
-# @app.route('/upload', methods=['POST'])
-# def fileUpload():
+@app.route('/upload', methods=['POST'])
+def fileUpload():
 
-#     print(" dude")
-#     print(os.path)
-#     target=UPLOAD_FOLDER
-#     if not os.path.isdir(target):
-#         os.mkdir(target)
-#     logger.info("welcome to upload`")
-#     print(request.json['data'])
-#     file1 = request.json['data']["file"]
-#     filename = secure_filename(file1['name'])
-#     destination="/".join([target, filename])
-#     file1.save(destination)
-#     session['uploadFilePath']=destination
-#     response="Whatever you wish too return"
-#     return response
+    print(" dude")
+    print(os.path)
+    target=UPLOAD_FOLDER
+    if not os.path.isdir(target):
+        os.mkdir(target)
+    logger.info("welcome to upload`")
+    file = request.files["file"]
+   
+    filename = secure_filename(file.filename)
+    destination="/".join([target, filename])
+    file.save(destination)
+    # session['uploadFilePath']=destination
+    response="File uploaded successfully"
+    return jsonify(message=response)
+
 
 @app.route("/info")
 def Get_Current_User():

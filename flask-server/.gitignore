@@ -1,8 +1,9 @@
 env
 __pycache__
+flask-server/__pycache__
 flask-server/Include
 flask-server/Lib
 flask-server/Model
 flask-server/Scripts
-flask-server/flask_session
+flask_session
 flask-server/env
