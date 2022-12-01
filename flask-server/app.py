@@ -64,7 +64,6 @@ app.json_encoder = MongoJsonEncoder
 def fileUpload():
 
     print(" dude")
-    print(os.path)
     target=UPLOAD_FOLDER
     if not os.path.isdir(target):
         os.mkdir(target)
@@ -74,8 +73,69 @@ def fileUpload():
     filename = secure_filename(file.filename)
     destination="/".join([target, filename])
     file.save(destination)
-    # session['uploadFilePath']=destination
+
+    df = pd.read_csv("datasets/"+filename)
     response="File uploaded successfully"
+
+    if filename=="monthlyavg.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.monthlyavg.insert_many(x)
+
+    elif filename=="yearlyavg.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.monthlyavg.insert_many(x)
+
+    elif filename=="weatherdatanew.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.user_collection.insert_many(x)
+
+
+    elif filename=="allpred.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.allpred.insert_many(x)
+
+    elif filename=="aircrafts.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.AirCrafts.insert_many(x)
+
+    elif filename=="cloudcoverpred.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.CloudCoverPred.insert_many(x)
+
+    elif filename=="temperaturepred.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.TempPred.insert_many(x)
+
+    elif filename=="windspeedpred.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.WindSpeedPred.insert_many(x)
+
+    elif filename=="pressurepred.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.PressurePred.insert_many(x)
+
+    elif filename=="minmaxmean.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.minmaxdata.insert_many(x)
+
+    elif filename=="test.csv":
+        x = json.loads(json.dumps(list(df.T.to_dict().values())))
+        db.test.insert_many(x)
+
+    else:
+        os.remove("datasets/"+filename)
+        response = "Incorrect File name"
+        # print("file not found")
+
+    
+
+    
+
+
+
+
+    # session['uploadFilePath']=destination
+   
     return jsonify(message=response)
 
 
