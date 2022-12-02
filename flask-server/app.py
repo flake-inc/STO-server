@@ -73,6 +73,7 @@ app.json_encoder = MongoJsonEncoder
 @app.route('/upload', methods=['POST'])
 @jwt_required()
 
+
 def fileUpload():
 
     print(" dude")
@@ -134,6 +135,9 @@ def fileUpload():
     elif filename=="test.csv":
         x = json.loads(json.dumps(list(df.T.to_dict().values())))
         db.test.insert_many(x)
+
+   
+         
 
     else:
         os.remove("datasets/"+filename)
@@ -216,6 +220,24 @@ def addstaff():
 #     print(session)
 #     session.pop(session["user_id"])
 #     return "200"
+
+
+
+@jwt_required()
+
+@app.route("/isloggedin", methods=["GET"])
+def isloggedin():
+ 
+
+    return jsonify({'message': 'Logged in'})
+
+
+# @app.route("/logout", methods=["POST"])
+# def User_Logout():
+#     print(session)
+#     session.pop(session["user_id"])
+#     return "200"
+
 
 
 @app.route('/')
