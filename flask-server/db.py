@@ -23,6 +23,9 @@ from app import app
 CONNECTION_STRING = "mongodb+srv://safetakeoff:safetakeoff@sto.8o3avqd.mongodb.net/?retryWrites=true&w=majority"
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('safetakeoff')
+print("\n\nDatabase Connected!")
+print("=====================")
+
 user_collection = pymongo.collection.Collection(db, 'weatherdatanew')
 minmaxdata = pymongo.collection.Collection(db, 'minmaxmeandata')
 yearlyavg = pymongo.collection.Collection(db, 'yearlyavg')

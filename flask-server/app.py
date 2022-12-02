@@ -29,8 +29,7 @@ UPLOAD_FOLDER = 'datasets'
 ALLOWED_EXTENSIONS = set(['csv'])
 # test to insert data to the data base
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('HELLO WORLD')
-
+logger = logging.getLogger('Safe-TakeOff by flake inc.')
 
 # db = LocalProxy(get_db)
 class MongoJsonEncoder(JSONEncoder):
@@ -58,6 +57,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 server_session.init_app(app)
 
 app.json_encoder = MongoJsonEncoder
+print("\nSafe-TakeOff by flake inc.")
+print("Backend Started!")
+print("=====================\n\n")
+
 
 
 @app.route('/upload', methods=['POST'])
@@ -340,6 +343,7 @@ def aircraftsdata():
     result['Temperature_t'] = df['Temperature Threshold'].to_list()
     result['Wind_t'] = df['Wind Speed Threshold'].to_list()
     result['Cloud_t'] = df['Total Cloud Cover Threshold'].to_list()
+    result['Pressure_t'] = df['Pressure'].to_list()
 
     return jsonify(result)
 
@@ -440,16 +444,10 @@ def windpred():
 
 @app.route("/check_today_danger", methods=['GET'])
 def check_today_danger():
-    dangered_aircrafts = []
-    model_list = []
-    make_list = []
-    cat_list = []
-    year_list = []
-    REG_list = []
 
     now = datetime.now()
     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-    new_dt = dt_string[:13] + ":00:00"
+    new_dt = dt_string[:12] + ":00:00"
     print("\n====================================")
     print("local time:", new_dt)
 
@@ -462,44 +460,32 @@ def check_today_danger():
     cloud = db.CloudCoverPred.find_one({"ds": new_dt})
     print("cloud cover predict", cloud['yhat1'])
 
-    aircrafts = db.AirCrafts.find({})
+    pressure = db.PressurePred.find_one({"ds": new_dt})
+    print("pressure predict", pressure['yhat1'])
+    print("\n====================================")
+
+
+    aircrafts = db.AirCrafts.find(
+        {"$or": [
+        {"Temperature Threshold": {"$lte": float(temp['yhat1'])}},
+        {"Pressure": {"$lte": float(pressure['yhat1'])}},
+        {"Total Cloud Cover Threshold": {"$lte": float(cloud['yhat1'])}},
+        {"Wind Speed Threshold": {"$lte": float(wind['yhat1'])}}
+        ]}, 
+        {'_id':False}
+    )
+
     df_air = pd.json_normalize(aircrafts)
-
-    for i in df_air.index:
-        if float(df_air['Wind Speed Threshold'][i]) <= float(wind['yhat1']):
-            dangered_aircrafts.append(df_air['_id'][i])
-            model_list.append(df_air['Model'][i])
-            make_list.append(df_air['Make'][i])
-            cat_list.append(df_air['Category'][i])
-            year_list.append(df_air['Year'][i])
-            REG_list.append(df_air['REG'][i])
-            continue
-
-        if float(df_air['Temperature Threshold'][i]) <= float(temp['yhat1']):
-            dangered_aircrafts.append(df_air['_id'][i])
-            model_list.append(df_air['Model'][i])
-            make_list.append(df_air['Make'][i])
-            cat_list.append(df_air['Category'][i])
-            year_list.append(df_air['Year'][i])
-            REG_list.append(df_air['REG'][i])
-            continue
-
-        if float(df_air['Total Cloud Cover Threshold'][i]) <= float(cloud['yhat1']):
-            dangered_aircrafts.append(df_air['_id'][i])
-            model_list.append(df_air['Model'][i])
-            make_list.append(df_air['Make'][i])
-            cat_list.append(df_air['Category'][i])
-            year_list.append(df_air['Year'][i])
-            REG_list.append(df_air['REG'][i])
-            continue
+    print("data in dataframe type:\n", df_air)
 
     result = {}
 
-    result['Model'] = model_list
-    result['Make'] = make_list
-    result['Category'] = cat_list
-    result['Year'] = make_list
-    result['REG'] = cat_list
+    for index, row in df_air.iterrows():
+        result[index] = dict(row)
+
+    # result['data'] = df_air.to_json(orient="records")
+
+    print(type(result))
     return jsonify(result)
 
 
