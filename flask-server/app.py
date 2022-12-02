@@ -539,16 +539,10 @@ def check_today_danger():
     )
 
     df_air = pd.json_normalize(aircrafts)
-    print("data in dataframe type:\n", df_air)
-
     result = {}
 
     for index, row in df_air.iterrows():
         result[index] = dict(row)
-
-    # result['data'] = df_air.to_json(orient="records")
-
-    print(type(result))
     return jsonify(result)
 
 
