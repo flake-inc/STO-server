@@ -1,0 +1,6 @@
+env
+__pycache__
+Include
+Model
+flask_session
+Lib
