@@ -17,6 +17,12 @@ from flask_cors import CORS, cross_origin
 from flask_restful import Api
 from flask_session import Session
 import redis
+from flask_jwt_extended import JWTManager
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request, jwt_required
+
+
+
 
 
 # from werkzeug.local import LocalProxy
@@ -49,21 +55,28 @@ CORS(app, supports_credentials=True)
 
 
 server_session = Session(app)
-app.config["secret_key"] = 'super secret key'
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_PERMANENT'] = False
+# app.config["secret_key"] = 'super secret key'
+# app.config['SESSION_TYPE'] = 'filesystem'
+# app.config['SESSION_PERMANENT'] = False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# app.config['SESSION_USE_SIGNER'] = True
-# app.config["SESSION_REDIS"] = redis.from_url("redis://127.0.0.1:5000")
-server_session.init_app(app)
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config["JWT_SECRET_KEY"] = "safetakeoff"
+jwt = JWTManager(app)
+app.secret_key = "safetakeoff"
+
+
+
 
 app.json_encoder = MongoJsonEncoder
 
 
 @app.route('/upload', methods=['POST'])
+@jwt_required()
+
 def fileUpload():
 
     print(" dude")
+    
     target=UPLOAD_FOLDER
     if not os.path.isdir(target):
         os.mkdir(target)
@@ -125,6 +138,7 @@ def fileUpload():
     else:
         os.remove("datasets/"+filename)
         response = "Incorrect File name"
+        return NameError
         # print("file not found")
 
     
@@ -139,20 +153,7 @@ def fileUpload():
     return jsonify(message=response)
 
 
-@app.route("/info")
-def Get_Current_User():
 
-    user_id = session.get('user_id')
-    print('hi', user_id)
-
-    if not user_id:
-        return jsonify({'error': 'Unauthorized '}), 401
-
-    # Retrieve a user by email:
-    user = db.user.find_one({'username': user_id})
-    return jsonify({
-        "username": user.username
-    })
 
 
 @app.route("/login", methods=["POST"])
@@ -172,20 +173,49 @@ def User_Login():
     if user['password'] != password:
         return jsonify({'error': 'Password error'}), 401
 
-    session["user_id"] = user['username']
-    print(session['user_id'])
-
-    return jsonify({
-        "email": user['username'],
-        "Message": "you are Successfully Logged In"
-    })
+    # session["user_id"] = user['username']
+    # print(session['user_id'])
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token, msg="you are Successfully Logged In")
 
 
-@app.route("/logout", methods=["POST"])
-def User_Logout():
-    print(session)
-    session.pop(session["user_id"])
-    return "200"
+
+
+@jwt_required()
+
+@app.route("/addstaff", methods=["GET","POST"])
+def addstaff():
+    print('hi')
+    # current_user = get_jwt_identity()
+
+    email = request.json.get('email',None)
+    password = request.json["password"]
+    print("hello", password)
+    # Retrieve a user by email:
+    user = db.user.find_one({'username': email})
+    print(user)
+    # if user is already register show this error message
+
+    if user  is not None:
+        return jsonify({'error': 'User already exists'}), 401
+
+    # if user['password'] != password:
+    #     return jsonify({'error': 'Password error'}), 401
+
+    # session["user_id"] = user['username']
+    # print(session['user_id'])
+    # access_token = create_access_token(identity=email)
+    # return jsonify(access_token=access_token, msg="you are Successfully Logged In")
+    db.user.insert_one({'username':email,'password':password})
+
+    return jsonify({'message': 'Staff added successfully'})
+
+
+# @app.route("/logout", methods=["POST"])
+# def User_Logout():
+#     print(session)
+#     session.pop(session["user_id"])
+#     return "200"
 
 
 @app.route('/')
@@ -244,9 +274,18 @@ def barchart():
     return jsonify(result)
 
 
+
+
+
+
 @app.route("/getpred", methods=['GET'])
-# @cross_origin(origin='*',headers=['Content- Type','Authorization'])
+@jwt_required()
+
+
 def getpred():
+
+    user_id = get_jwt_identity()
+    print(user_id)
 
     today = datetime.today().strftime('%Y-%m-%d')
 
