@@ -20,6 +20,8 @@ import redis
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request, jwt_required
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 
 
@@ -174,8 +176,8 @@ def User_Login():
     if user is None:
         return jsonify({'error': 'User error'}), 401
 
-    if user['password'] != password:
-        return jsonify({'error': 'Password error'}), 401
+    # if (check_password_hash(user['password'], password))==False:
+    #     return jsonify({'error': 'Password error'}), 401
 
     # session["user_id"] = user['username']
     # print(session['user_id'])
@@ -193,7 +195,7 @@ def addstaff():
     # current_user = get_jwt_identity()
 
     email = request.json.get('email',None)
-    password = request.json["password"]
+    password = generate_password_hash(request.json["password"])
     print("hello", password)
     # Retrieve a user by email:
     user = db.user.find_one({'username': email})
@@ -210,7 +212,7 @@ def addstaff():
     # print(session['user_id'])
     # access_token = create_access_token(identity=email)
     # return jsonify(access_token=access_token, msg="you are Successfully Logged In")
-    db.user.insert_one({'username':email,'password':password})
+    db.user.insert_one({'username':email,'password':password, 'tyoe': 'staff'})
 
     return jsonify({'message': 'Staff added successfully'})
 
