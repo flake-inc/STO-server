@@ -180,7 +180,7 @@ def User_Login():
     # session["user_id"] = user['username']
     # print(session['user_id'])
     access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token, msg="you are Successfully Logged In")
+    return jsonify(access_token=access_token, msg="you are Successfully Logged In",usertype = user['type'])
 
 
 
