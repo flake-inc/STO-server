@@ -285,6 +285,7 @@ def barchart():
     result = {}
 
     result['date'] = df['monthdate'].to_list()
+    
     result['temp'] = df['temperature'].to_list()
     result['wind'] = df['wind_speed'].to_list()
     result['press'] = df['mean_sea_level_pressure'].to_list()
@@ -303,7 +304,136 @@ def barchart():
 
 
 
+@app.route("/tempminmaxavg", methods=['GET'])
+# @jwt_required()
 
+
+def tempminmaxavg():
+
+
+    today = datetime.today().strftime('%Y-%m-%d')
+
+    d = db.allpred.find({'date': today})
+    df = pd.json_normalize(d)
+    df = df.drop(['_id'], axis=1)
+    df = df.sort_values('hour')
+    result ={}
+    result['temp'] = ({'min':min(df['temperature'].to_list()),'avg':sum(df['temperature'].to_list())/24,'max':max(df['temperature'].to_list())})
+    result['wind'] = {'min':min(df['windspeed'].to_list()),'avg':sum(df['windspeed'].to_list())/24,'max':max(df['windspeed'].to_list())}
+    result['pressure'] = {'min':min(df['pressure'].to_list()),'avg':sum(df['pressure'].to_list())/24,'max':max(df['pressure'].to_list())}
+    result['cloud'] = {'min':min(df['cloudcover'].to_list()),'avg':sum(df['cloudcover'].to_list())/24,'max':max(df['cloudcover'].to_list())}
+    # df =json.loads(json.dumps(list(df.T.to_dict().values())))
+
+    # result={}
+
+    # result['temp']= df['temperature'].to_list()
+    # result['date']= df['datestamp'].to_list()
+    # result['hour']= df['hour'].to_list()
+    # result['wind']= df['windspeed'].to_list()
+    # result['press']= df['pressure'].to_list()
+    # result['cloud']= df['cloudcover'].to_list()
+
+    
+    return jsonify(result['temp'])
+
+
+
+@app.route("/windminmaxavg", methods=['GET'])
+# @jwt_required()
+
+
+def windminmaxavg():
+
+
+    today = datetime.today().strftime('%Y-%m-%d')
+
+    d = db.allpred.find({'date': today})
+    df = pd.json_normalize(d)
+    df = df.drop(['_id'], axis=1)
+    df = df.sort_values('hour')
+    result ={}
+    result['temp'] = ({'min':min(df['temperature'].to_list()),'avg':sum(df['temperature'].to_list())/24,'max':max(df['temperature'].to_list())})
+    result['wind'] = {'min':min(df['windspeed'].to_list()),'avg':sum(df['windspeed'].to_list())/24,'max':max(df['windspeed'].to_list())}
+    result['pressure'] = {'min':min(df['pressure'].to_list()),'avg':sum(df['pressure'].to_list())/24,'max':max(df['pressure'].to_list())}
+    result['cloud'] = {'min':min(df['cloudcover'].to_list()),'avg':sum(df['cloudcover'].to_list())/24,'max':max(df['cloudcover'].to_list())}
+    # df =json.loads(json.dumps(list(df.T.to_dict().values())))
+
+    # result={}
+
+    # result['temp']= df['temperature'].to_list()
+    # result['date']= df['datestamp'].to_list()
+    # result['hour']= df['hour'].to_list()
+    # result['wind']= df['windspeed'].to_list()
+    # result['press']= df['pressure'].to_list()
+    # result['cloud']= df['cloudcover'].to_list()
+
+    
+    return jsonify(result['wind'])
+
+
+@app.route("/pressminmaxavg", methods=['GET'])
+# @jwt_required()
+
+
+def pressminmaxavg():
+
+
+    today = datetime.today().strftime('%Y-%m-%d')
+
+    d = db.allpred.find({'date': today})
+    df = pd.json_normalize(d)
+    df = df.drop(['_id'], axis=1)
+    df = df.sort_values('hour')
+    result ={}
+    result['temp'] = ({'min':min(df['temperature'].to_list()),'avg':sum(df['temperature'].to_list())/24,'max':max(df['temperature'].to_list())})
+    result['wind'] = {'min':min(df['windspeed'].to_list()),'avg':sum(df['windspeed'].to_list())/24,'max':max(df['windspeed'].to_list())}
+    result['pressure'] = {'min':min(df['pressure'].to_list()),'avg':sum(df['pressure'].to_list())/24,'max':max(df['pressure'].to_list())}
+    result['cloud'] = {'min':min(df['cloudcover'].to_list()),'avg':sum(df['cloudcover'].to_list())/24,'max':max(df['cloudcover'].to_list())}
+    # df =json.loads(json.dumps(list(df.T.to_dict().values())))
+
+    # result={}
+
+    # result['temp']= df['temperature'].to_list()
+    # result['date']= df['datestamp'].to_list()
+    # result['hour']= df['hour'].to_list()
+    # result['wind']= df['windspeed'].to_list()
+    # result['press']= df['pressure'].to_list()
+    # result['cloud']= df['cloudcover'].to_list()
+
+    
+    return jsonify(result['pressure'])
+
+@app.route("/cloudminmaxavg", methods=['GET'])
+# @jwt_required()
+
+
+def cloudminmaxavg():
+
+
+    today = datetime.today().strftime('%Y-%m-%d')
+
+    d = db.allpred.find({'date': today})
+    df = pd.json_normalize(d)
+    df = df.drop(['_id'], axis=1)
+    df = df.sort_values('hour')
+    result ={}
+    result['temp'] = ({'min':min(df['temperature'].to_list()),'avg':sum(df['temperature'].to_list())/24,'max':max(df['temperature'].to_list())})
+    result['wind'] = {'min':min(df['windspeed'].to_list()),'avg':sum(df['windspeed'].to_list())/24,'max':max(df['windspeed'].to_list())}
+    result['pressure'] = {'min':min(df['pressure'].to_list()),'avg':sum(df['pressure'].to_list())/24,'max':max(df['pressure'].to_list())}
+    result['cloud'] = {'min':min(df['cloudcover'].to_list()),'avg':sum(df['cloudcover'].to_list())/24,'max':max(df['cloudcover'].to_list())}
+    # df =json.loads(json.dumps(list(df.T.to_dict().values())))
+
+    # result={}
+
+    # result['temp']= df['temperature'].to_list()
+    # result['date']= df['datestamp'].to_list()
+    # result['hour']= df['hour'].to_list()
+    # result['wind']= df['windspeed'].to_list()
+    # result['press']= df['pressure'].to_list()
+    # result['cloud']= df['cloudcover'].to_list()
+
+    
+    return jsonify(result['cloud'])
 
 @app.route("/getpred", methods=['GET'])
 @jwt_required()
