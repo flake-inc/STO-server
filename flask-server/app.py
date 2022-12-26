@@ -465,6 +465,36 @@ def getpred():
     return jsonify(json_list)
 
 
+@app.route("/getdaypred", methods=['GET'])
+@jwt_required()
+
+def getdaypred():
+
+    user_id = get_jwt_identity()
+
+
+    date = request.args.get('date')
+    print(date)
+
+    d = db.allpred.find({'date': date})
+    df = pd.json_normalize(d)
+    df = df.drop(['_id'], axis=1)
+    df = df.sort_values('hour')
+    # df =json.loads(json.dumps(list(df.T.to_dict().values())))
+
+    # result={}
+
+    # result['temp']= df['temperature'].to_list()
+    # result['date']= df['datestamp'].to_list()
+    # result['hour']= df['hour'].to_list()
+    # result['wind']= df['windspeed'].to_list()
+    # result['press']= df['pressure'].to_list()
+    # result['cloud']= df['cloudcover'].to_list()
+
+    json_list = json.loads(json.dumps(list(df.T.to_dict().values())))
+    return jsonify(json_list)
+
+
 @app.route("/test", methods=['GET'])
 def test():
 
