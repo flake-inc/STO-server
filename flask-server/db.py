@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_pymongo import pymongo
-from app import app
+from app import server_init
 
+app = server_init()
 # import bson
 
 # from flask import current_app, g
