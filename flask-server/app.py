@@ -448,12 +448,12 @@ def server_init():
         user_id = get_jwt_identity()
 
         date = request.args.get('date')
-        print(date)
-
         d = db.allpred.find({'date': date})
         df = pd.json_normalize(d)
         df = df.drop(['_id'], axis=1)
         df = df.sort_values('hour')
+
+        
         # df =json.loads(json.dumps(list(df.T.to_dict().values())))
 
         # result={}
@@ -467,6 +467,46 @@ def server_init():
 
         json_list = json.loads(json.dumps(list(df.T.to_dict().values())))
         return jsonify(json_list)
+
+    @app.route("/getcomparison", methods=['GET'])
+    @jwt_required()
+    def getcomparison():
+        user_id = get_jwt_identity()
+
+        date = request.args.get('date')
+        aircraft = request.args.get('aircraft')
+        print("\n\n\naircraft is", aircraft)
+
+        d = db.allpred.find({'date': date})
+        df = pd.json_normalize(d)
+        df = df.drop(['_id'], axis=1)
+        df = df.sort_values('hour')
+
+        a = db.AirCrafts.find({'Model': aircraft})
+        df2 = pd.json_normalize(a)
+        df2 = df2.drop(['_id'], axis=1)
+        print(df2)
+
+        result = {}
+
+        if ( (result['t_mean'] > result['t_th']) | (result['w_mean'] > result['w_th']) | (result['p_mean'] > result['p_th']) | (result['c_mean'] > result['c_th'])):
+            dangered = True
+        else:
+            dangered = False
+
+        result['data'] = {
+            't_mean':  df["temperature"].mean(), 
+            'w_mean': df["windspeed"].mean(), 
+            'p_mean' : df["pressure"].mean(), 
+            'c_mean' : df["cloudcover"].mean(),
+            't_th' : df2["Temperature Threshold"].mean(),
+            'w_th' : df2["Wind Speed Threshold"].mean(),
+            'p_th' : df2["Pressure"].mean(),
+            'c_th' : df2["Total Cloud Cover Threshold"].mean(),
+            'danger' : dangered
+        }
+
+        return jsonify(result['data'])
 
 
     @app.route("/test", methods=['GET'])
@@ -580,7 +620,7 @@ def server_init():
     @app.route("/aircraftscategories", methods=['GET'])
     def aircraftscategories():
 
-        d = db.AirCrafts.distinct("Category")
+        d = db.AirCrafts.distinct("Model")
         result = {}
         result['Categories'] = d
 
@@ -637,6 +677,40 @@ def server_init():
         result['yhat1'] = df['yhat1'].to_list()
 
         return jsonify(result)
+
+    @app.route("/check_day_danger", methods=['GET'])
+    def check_a_day_danger():
+        date = request.args.get('date')
+        d = db.allpred.find({'date': date})
+        df = pd.json_normalize(d)
+        df = df.drop(['_id'], axis=1)
+        df = df.sort_values('hour')
+
+
+        t_mean = df["temperature"].mean()
+        w_mean = df["windspeed"].mean()
+        p_mean = df["pressure"].mean()
+        c_mean = df["cloudcover"].mean()
+
+        print(t_mean, w_mean, p_mean, c_mean)
+
+        aircrafts = db.AirCrafts.find(
+            {"$or": [
+                {"Temperature Threshold": {"$lte": float(t_mean)}},
+                {"Pressure": {"$lte": float(p_mean)}},
+                {"Total Cloud Cover Threshold": {"$lte": float(c_mean)}},
+                {"Wind Speed Threshold": {"$lte": float(w_mean)}}
+            ]},
+            {'_id': False}
+        )
+
+        df_air = pd.json_normalize(aircrafts)
+        result = {}
+
+        for index, row in df_air.iterrows():
+            result[index] = dict(row)
+        return jsonify(result)
+
 
 
     @app.route("/check_today_danger", methods=['GET'])
