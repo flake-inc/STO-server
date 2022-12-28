@@ -142,29 +142,31 @@ def server_init():
         return jsonify(message=response)
 
 
+    @app.route("/login", methods=["POST"])
+    def User_Login():
+        if request.json['email'] is None:
+            return jsonify(msg="All fields are required for logging in", usertype=user['type'], status_code=400)
+        
+        if  (request.json["password"] == "None") | (request.json["password"] == None):
+            return jsonify(msg="All fields are required for logging in",status_code=400)
 
+        email = request.json['email']
+        password = request.json["password"]
 
-
-@app.route("/login", methods=["POST"])
-def User_Login():
-
-    email = request.json['email']
-    password = request.json["password"]
-    print("hello", password)
-    # Retrieve a user by email:
-    user = db.user.find_one({'username': email})
+        # Retrieve a user by email:
+        user = db.user.find_one({'username': email})
 
         # if user is already register show this error message
-    if user is None:
-        return jsonify({'error': 'User error'}), 401
+        if user is None:
+            return jsonify({'error': 'User error'}), 401
 
-    # if (check_password_hash(user['password'], password))==False:
-    #     return jsonify({'error': 'Password error'}), 401
+        if (check_password_hash(user['password'], password))==False:
+            return jsonify(msg="Password is incorrect...", status_code=401)
 
         # session["user_id"] = user['username']
         # print(session['user_id'])
-    access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token, msg="you are Successfully Logged In", usertype=user['type'],status_code=200)
+        access_token = create_access_token(identity=email)
+        return jsonify(access_token=access_token, msg="you are Successfully Logged In", usertype=user['type'],status_code=200)
 
 
     @jwt_required()
