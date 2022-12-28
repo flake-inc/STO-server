@@ -129,6 +129,7 @@ def server_init():
 
         elif filename == "test.csv":
             x = json.loads(json.dumps(list(df.T.to_dict().values())))
+            db.test.deleteMany({})
             db.test.insert_many(x)
 
         else:
@@ -439,6 +440,8 @@ def server_init():
 
         final.to_csv('allpredicted2.csv',index=False)
         x = json.loads(json.dumps(list(final.T.to_dict().values())))
+        db.test.delete_many({})
+
         db.test.insert_many(x)
 
 
