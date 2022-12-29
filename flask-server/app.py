@@ -756,6 +756,7 @@ def server_init():
         user_id = get_jwt_identity()
 
         date = request.args.get('date')
+        print("DATEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe0: ", date)
         d = db.allpred.find({'date': date})
         df = pd.json_normalize(d)
         df = df.drop(['_id'], axis=1)
@@ -782,7 +783,7 @@ def server_init():
         user_id = get_jwt_identity()
 
         date = request.args.get('date')
-        aircraft = request.args.get('aircraft')
+        aircraft = str(request.args.get('aircraft'))
         print("\n\n\naircraft is", aircraft)
 
         d = db.allpred.find({'date': date})
@@ -796,21 +797,29 @@ def server_init():
         print(df2)
 
         result = {}
+        t_mean = df["temperature"].mean()
+        w_mean = df["windspeed"].mean()
+        p_mean =  df["pressure"].mean() 
+        c_mean = df["cloudcover"].mean()
+        t_th = df2["Temperature Threshold"].mean()
+        w_th = df2["Wind Speed Threshold"].mean()
+        p_th = df2["Pressure"].mean()
+        c_th = df2["Total Cloud Cover Threshold"].mean()
 
-        if ( (result['t_mean'] > result['t_th']) | (result['w_mean'] > result['w_th']) | (result['p_mean'] > result['p_th']) | (result['c_mean'] > result['c_th'])):
+        if (( t_mean > t_th) | (w_mean > w_th) | (p_mean > p_th) | (c_mean > c_th)):
             dangered = True
         else:
             dangered = False
 
         result['data'] = {
-            't_mean':  df["temperature"].mean(), 
-            'w_mean': df["windspeed"].mean(), 
-            'p_mean' : df["pressure"].mean(), 
-            'c_mean' : df["cloudcover"].mean(),
-            't_th' : df2["Temperature Threshold"].mean(),
-            'w_th' : df2["Wind Speed Threshold"].mean(),
-            'p_th' : df2["Pressure"].mean(),
-            'c_th' : df2["Total Cloud Cover Threshold"].mean(),
+            't_mean': t_mean, 
+            'w_mean': w_mean, 
+            'p_mean' : p_mean, 
+            'c_mean' : c_mean,
+            't_th' : t_th,
+            'w_th' : w_th,
+            'p_th' : p_th,
+            'c_th' : c_th,
             'danger' : dangered
         }
 
